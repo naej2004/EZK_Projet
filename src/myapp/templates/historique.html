@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Historique {{client.Nom}}</title>
+    <link rel="stylesheet" href="{% static 'CSS/style.css' %}" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul>
+          <li><img src="{% static 'IMAGES/EZK_WHITE.png' %}" alt="EZK" title="EZK" /></li>
+          <li><a href="{% url 'myapp:entre' %}">ENTRE</a></li>
+          <li><a href="{% url 'myapp:stock' %}">STOCK</a></li>
+          <li><a href="{% url 'myapp:sortie' %}">SORTIE</a></li>
+          <li>
+            TREICHVILLE&nbsp;<ion-icon name="caret-down-outline"></ion-icon>
+          </li>
+        </ul>
+      </nav>
+      <div class="after"></div>
+    </header>
+    <main>
+      <section>
+        <div class="left">
+            <h2><a href="{% url 'myapp:list_client' %}">LISTE DES CLIENTS</a></h2>
+            <h2><a href="{% url 'myapp:credit' %}">CREDIT</a></h2>
+            <h2><a href="{% url 'myapp:transaction' %}">TRANSACTION</a></h2>
+        </div>
+        <div class="right">
+          <h2 align="center" style="font-size: 35px">
+            Historique : {{client.Nom}}
+          </h2>
+          <h3 align="center">Versement :</h3>
+          <div class="search">
+            <a href="{% url 'myapp:achat' client.idClient %}">
+              <button><b><ion-icon name="add-outline" class="plus"></ion-icon> Achat</b></button>
+            </a>
+            <form action="{% url 'myapp:historique' client.idClient %}" method="post">
+              {% csrf_token %}
+              <label for="date">Date : </label
+              ><input
+                type="date"
+                name="date"
+                id="date"
+                class="Versement"
+                required
+              />&nbsp; <label for="motif">Motif : </label
+              ><input
+                type="text"
+                name="motif"
+                id="motif"
+                value="Paiement de dette"
+                readonly
+              />&nbsp; <label for="montant">Montant : </label
+              ><input
+                type="number"
+                name="montant"
+                id="montant"
+                required
+              />
+              &nbsp;&nbsp;&nbsp;<input
+                type="submit"
+                value="Valider"
+                style="
+                  background-color: rgb(29, 193, 29);
+                  color: #fff;
+                  font-size: 20px;
+                  cursor: pointer;
+                  padding: 5px;
+                  width: 80px;
+                  border-radius: 10px;
+                  margin-top: 5px;
+                "
+              />
+            </form>
+          </div>
+          <br />
+          <div class="resultat">
+            <div class="all">
+              <table>
+                <thead>
+                  <tr>
+                    <td>Date</td>
+                    <td>Designation Articles</td>
+                    <td>Montant Total</td>
+                    <td>Montant Payé</td>
+                    <td>Montant Restant</td>
+                    <td>Satut Achat</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for historique in historiques %}
+                    <tr>
+                      <td>{{historique.Date_Achat}}</td>
+                      <td>{{historique.Designation}}</td>
+                      <td>{{historique.Montant_Total}}</td>
+                      <td>{{historique.Montant_Paye}}</td>
+                      <td>{{historique.Montant_Restant}}</td>
+                      {% if historique.Montant_Restant <= 0 %}
+                        <td class="solde">Soldé</td>
+                      {% else %}
+                        <td class="credit">Credit</td>
+                      {% endif %}
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <div class="total">
+              <span>Total Credit </span>
+              <div class="boite">{{montant_credit}}</div>
+              <span>Total Versement</span>
+              <div class="boite">{{montant_versement}}</div>
+              <span>Total Achat</span>
+              <div class="boite">{{montant_achat}}</div>
+              <span>Statut Client</span>
+              {% if client.Statut == True %}
+                <div class="boite" style="color:green; font-weight: bold;">Soldé</div>
+              {% else %}
+                <div class="boite" style="color:red; font-weight: bold;">Crédit</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
+    ></script>
+  </body>
+</html>

@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CONNECTEZ-VOUS</title>
+    <link rel="stylesheet" href="{% static 'CSS/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'CSS/connexion.css' %}" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul>
+          <li><img src="{% static 'IMAGES/EZK_WHITE.png' %}" alt="EZK" title="EZK" /></li>
+          <li><a href="{% url 'myapp:entre' %}">ENTRE</a></li>
+          <li><a href="{% url 'myapp:stock' %}">STOCK</a></li>
+          <li><a href="{% url 'myapp:sortie' %}">SORTIE</a></li>
+          <li>
+            TREICHVILLE&nbsp;<ion-icon name="caret-down-outline"></ion-icon>
+          </li>
+        </ul>
+      </nav>
+      <div class="after"></div>
+    </header>
+    <main>
+      <div class="connexion">
+        {% if message %}
+        <h4 style="color:red;">{{ message }}</h4>
+      {% endif %}
+        <form action="{% url 'myapp:connexion' %}" method="post">
+          {% csrf_token %}
+          <label for="Password" style="cursor: pointer;">Entrez le mot de passe : </label>&nbsp;&nbsp;&nbsp;
+          <input type="password" name="Password" id="Password" style="cursor: pointer;" required /> &nbsp;&nbsp;
+          <input type="submit" value="SE CONNECTER" style="cursor: pointer;">
+        </form>
+      </div>
+    </main>
+    <footer></footer>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
+    ></script>
+  </body>
+</html>
