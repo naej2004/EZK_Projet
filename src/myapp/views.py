@@ -23,6 +23,11 @@ def sortie(request):
             for i in range(1, nombre_lignes + 1):
                 marque = request.POST.get(f"marque_{i}")
                 numero = request.POST.get(f"numero_{i}")
+                try:
+                    numero_ = Numero.objects.get(Numero=numero)
+                except Numero.DoesNotExist:
+                    message = "Le Numero n'existe pas !!"
+                    return render(request, sortie.html, {"message": message})
                 nature = request.POST.get(f"nature_{i}")
                 details = request.POST.get(f"details_{i}")
                 if details is None:
@@ -68,8 +73,13 @@ def sortie(request):
                             context = {"error_pneu": message}
                             return render(request, "sortie.html", context)
                         if pneu is not None:
-                            pneu.Quantite -= quantite
-                            pneu.save()
+                            if pneu.Quantite <= 0 or pneu.Quantite < quantite:
+                                message = f"Quantité de pneu insuffisant ! Il reste {pneu.Quantite} pneu(s)"
+                                context = {"error_pneu": message}
+                                return render(request, "sortie.html", context)
+                            else:
+                                pneu.Quantite -= quantite
+                                pneu.save()
                     elif nature_.Name == "Batterie":
                         try:
                             batterie = Batterie.objects.get(Marque=marque_saisie, Numero=numero_saisie, Details__icontains=details)
@@ -78,8 +88,13 @@ def sortie(request):
                             context = {"error_pneu": message}
                             return render(request, "sortie.html", context)
                         if batterie is not None:
-                            batterie.Quantite -= quantite
-                            batterie.save()
+                            if batterie.Quantite <= 0 or batterie.Quantite  < quantite:
+                                message = f"Quantité de batterie insuffisant ! Il reste {batterie.Quantite} batterie(s)"
+                                context = {"error_pneu": message}
+                                return render(request, "sortie.html", context)
+                            else:
+                                batterie.Quantite -= quantite
+                                batterie.save()
                     else:
                         try:
                             accessoire = Accessoire.objects.get(Marque=marque_saisie, Numero=numero_saisie, Details__icontains=details)
@@ -88,8 +103,13 @@ def sortie(request):
                             context = {"error_pneu": message}
                             return render(request, "sortie.html", context)
                         if accessoire is not None:
-                            accessoire.Quantite -= quantite
-                            accessoire.save()
+                            if accessoire.Quantite <= 0 or accessoire.Quantite  < quantite:
+                                message = f"Quantité d'accessoire insuffisant ! Il reste {accessoire.Quantite} accessoire(s)"
+                                context = {"error_pneu": message}
+                                return render(request, "sortie.html", context)
+                            else:
+                                accessoire.Quantite -= quantite
+                                accessoire.save()
                     marque_saisie.Quantite = quantite_marque
                     marque_saisie.save()
                     numero_saisie.Quantite = quantite_numero
@@ -669,6 +689,12 @@ def achat(request, client_id):
             for i in range(1, nombre_lignes + 1):
                 marque = request.POST.get(f"marque_{i}")
                 numero = request.POST.get(f"numero_{i}")
+                try:
+                    numero_ = Numero.objects.get(Numero=numero)
+                except Numero.DoesNotExist:
+                    message = "Le Numero n'existe pas !!"
+                    return render(request, achat.html, {"message": message})
+                nature = request.POST.get(f"nature_{i}")
                 details = request.POST.get(f"details_{i}")
                 if details is None:
                     details = ""
@@ -700,24 +726,61 @@ def achat(request, client_id):
                 designation = f"{marque} {numero} {details}"
                 marque_saisie = Marque.objects.get(Nom=marque)
                 quantite_marque = marque_saisie.Quantite - quantite
+                nature_ = Nature.objects.get(Name=nature)
                 numero_saisie = Numero.objects.get(Numero=numero)
                 quantite_numero = numero_saisie.Quantite - quantite
                 if (quantite_marque < 0 or marque_saisie.Quantite == 0) and (quantite_numero < 0 or numero_saisie.Quantite == 0):
-                    message = "Nombre de Pneus insuffisant !!"
+                    message = "Quantité insuffisant !!"
                     context = {
                         "quantite_null": message
                     }
-                    return render(request, "sortie.html", context=context)
+                    return render(request, "achat.html", context=context)
                 else:
-                    try:
-                        pneu = Pneu.objects.get(Marque=marque_saisie, Numero=numero_saisie, Details__icontains=details)
-                    except Pneu.DoesNotExist:
-                        message = "Pneu non existant"
-                        context = {"error_pneu": message}
-                        return render(request, "sortie.html", context)
-                    if pneu is not None:
-                        pneu.Quantite -= quantite
-                        pneu.save()
+                    if nature_.Name == "Pneu":
+                        try:
+                            pneu = Pneu.objects.get(Marque=marque_saisie, Numero=numero_saisie, Details__icontains=details)
+                        except Pneu.DoesNotExist:
+                            message = "Pneu non existant"
+                            context = {"error_pneu": message}
+                            return render(request, "achat.html", context)
+                        if pneu is not None:
+                            if pneu.Quantite <= 0 or pneu.Quantite < quantite:
+                                message = f"Quantité de pneu insuffisant ! Il reste {pneu.Quantite} pneu(s)"
+                                context = {"error_pneu": message}
+                                return render(request, "achat.html", context)
+                            else:
+                                pneu.Quantite -= quantite
+                                pneu.save()
+                    elif nature_.Name == "Batterie":
+                        try:
+                            batterie = Batterie.objects.get(Marque=marque_saisie, Numero=numero_saisie, Details__icontains=details)
+                        except Batterie.DoesNotExist:
+                            message = "Batterie non existant"
+                            context = {"error_pneu": message}
+                            return render(request, "achat.html", context)
+                        if batterie is not None:
+                            if batterie.Quantite <= 0 or batterie.Quantite  < quantite:
+                                message = f"Quantité de batterie insuffisant ! Il reste {batterie.Quantite} batterie(s)"
+                                context = {"error_pneu": message}
+                                return render(request, "achat.html", context)
+                            else:
+                                batterie.Quantite -= quantite
+                                batterie.save()
+                    else:
+                        try:
+                            accessoire = Accessoire.objects.get(Marque=marque_saisie, Numero=numero_saisie, Details__icontains=details)
+                        except Accessoire.DoesNotExist:
+                            message = "Accessoire non existant"
+                            context = {"error_pneu": message}
+                            return render(request, "achat.html", context)
+                        if accessoire is not None:
+                            if accessoire.Quantite <= 0 or accessoire.Quantite  < quantite:
+                                message = f"Quantité d'accessoire insuffisant ! Il reste {accessoire.Quantite} accessoire(s)"
+                                context = {"error_pneu": message}
+                                return render(request, "achat.html", context)
+                            else:
+                                accessoire.Quantite -= quantite
+                                accessoire.save()
                     marque_saisie.Quantite = quantite_marque
                     marque_saisie.save()
                     numero_saisie.Quantite = quantite_numero
@@ -730,11 +793,24 @@ def achat(request, client_id):
                     Montant_Restant=montant_restant,
                     Client=client
                 )
-                pneu_achat = Pneu.objects.get(Numero=numero_saisie, Marque=marque_saisie, Details__icontains=details)
-                PneuHistorique.objects.create(
-                    Pneu_Numero=pneu_achat,
-                    Historique_idHistorique=history
-                )
+                if nature_.Name == "Pneu":
+                    pneu_achat = Pneu.objects.get(Numero=numero_saisie, Marque=marque_saisie, Details__icontains=details)
+                    PneuHistorique.objects.create(
+                        Pneu_Numero=pneu_achat,
+                        Historique_idHistorique=history
+                    )
+                elif nature_.Name == "Batterie":
+                    batterie_achat = Batterie.objects.get(Numero=numero_saisie, Marque=marque_saisie, Details__icontains=details)
+                    BatterieHistorique.objects.create(
+                        Batterie_Numero = batterie_achat,
+                        Historique_idHistorique=history
+                    )
+                else:
+                    accessoire_achat = Accessoire.objects.get(Numero=numero_saisie, Marque=marque_saisie, Details__icontains=details)
+                    AccessoireHistorique.objects.create(
+                        Accesoire_Numero = accessoire_achat,
+                        Historique_idHistorique=history
+                    )
             return redirect("myapp:historique", client_id=client.idClient)
         else:
             marques = Marque.objects.all()

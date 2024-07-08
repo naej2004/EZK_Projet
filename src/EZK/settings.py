@@ -71,7 +71,7 @@ DATABASES = {
     }
 }
 
-DATABASES['default'] = dj_database_url.parse("postgres://ezk_pneumatique_user:iuSbfokwHww3sDMZQYZKDyyGaMC6xyvR@dpg-cmej0pv109ks73c6oajg-a.oregon-postgres.render.com/ezk_pneumatique")
+# DATABASES['default'] = dj_database_url.parse("postgres://ezk_pneumatique_user:iuSbfokwHww3sDMZQYZKDyyGaMC6xyvR@dpg-cmej0pv109ks73c6oajg-a.oregon-postgres.render.com/ezk_pneumatique")
 
 # postgres://ezk_pneumatique_user:iuSbfokwHww3sDMZQYZKDyyGaMC6xyvR@dpg-cmej0pv109ks73c6oajg-a.oregon-postgres.render.com/ezk_pneumatique
 # Password validation
